@@ -13,5 +13,12 @@ matrix:
   allow_failures:
     - php: nightly
 
+addons:
+  code_climate:
+    repo_token: 756f16d91ebde9c4857c4360f62629d70305ff83d76f2ef9ca6e7bf96d33e885
+
 before_install:
   - composer install --prefer-source
+
+after_script:
+  - vendor/bin/test-reporter
