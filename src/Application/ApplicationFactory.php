@@ -17,7 +17,6 @@ class ApplicationFactory
     public function create()
     {
         $app = new Application('phpdasuite', '0.1');
-        $app->setDefaultCommand('cawolf:phpda:generate-config');
         $app->add(new GenerateConfigCommand());
         return $app;
     }

@@ -8,9 +8,18 @@ PhpDependencyAnalysisSuite
 
 This suite will help you integrate the great project [PhpDependencyAnalysis](https://github.com/mamuz/PhpDependencyAnalysis) into your application.
 
-### Todo
+## Commands
 
-* Command to generate configuration files consumed by the [Analyze Command](https://github.com/mamuz/PhpDependencyAnalysis/blob/master/README.md#usage)
+1. Command to generate configuration files consumed by the [Analyze Command](https://github.com/mamuz/PhpDependencyAnalysis/blob/master/README.md#usage)
+
+### Command to generate configuration files
+
+    bin/phpdasuite generate-config
+
+TODO: explain arguments and options
+
+## Todo
+
 * Command to parse the results of the [Analyze Command](https://github.com/mamuz/PhpDependencyAnalysis/blob/master/README.md#usage) and take certain actions, such as
     * alert class cycles
     * alert warnings

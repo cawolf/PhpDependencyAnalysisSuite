@@ -11,6 +11,6 @@ class ApplicationFactoryTest extends \PHPUnit_Framework_TestCase
         $factory = new ApplicationFactory();
         $application = $factory->create();
         $this->assertInstanceOf('Symfony\Component\Console\Application', $application);
-        $this->assertNotNull($application->get('cawolf:phpda:generate-config'));
+        $this->assertNotNull($application->get('generate-config'));
     }
 }
