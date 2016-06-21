@@ -1,5 +1,5 @@
 {
-  "name": "wolfo/php-dependency-analysis-suite",
+  "name": "cawolf/php-dependency-analysis-suite",
   "license": "MIT",
   "type": "project",
   "autoload": {
