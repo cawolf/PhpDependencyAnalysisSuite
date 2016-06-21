@@ -11,6 +11,7 @@ sudo: false
 
 matrix:
   allow_failures:
+    - php: hhvm
     - php: nightly
 
 addons:
@@ -21,4 +22,4 @@ before_install:
   - composer install --prefer-source
 
 after_script:
-  - vendor/bin/test-reporter
+  - if [ "$TRAVIS_PHP_VERSION" == "5.5" ]; then vendor/bin/test-reporter; fi

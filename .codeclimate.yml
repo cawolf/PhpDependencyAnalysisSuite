@@ -9,6 +9,8 @@ engines:
     enabled: true
   phpmd:
     enabled: true
+    exclude_fingerprints:
+      - 4fe3e6d4bb44944e9682f1b312217d2e   # static access to Yaml::dump()
 ratings:
   paths:
   - "**.php"
