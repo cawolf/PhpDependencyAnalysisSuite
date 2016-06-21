@@ -1,4 +1,5 @@
 .idea/
+autoload.php
 build/
 composer.lock
 vendor/
