@@ -49,7 +49,7 @@ class GenerateConfigCommand extends Command
                 ['tests']
             )
             ->addOption(
-                'group-length',
+                'namespace-depth',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'depth of namespace used for grouping results',
@@ -78,7 +78,7 @@ class GenerateConfigCommand extends Command
             'ignore' => $input->getOption('ignore'),
             'formatter' => sprintf('PhpDA\Writer\Strategy\%s', ucfirst($input->getOption('format'))),
             'target' => $input->getArgument('target'),
-            'groupLength' => $input->getOption('group-length'),
+            'groupLength' => $input->getOption('namespace-depth'),
             'visitor' => [
                 'PhpDA\Parser\Visitor\TagCollector',
                 'PhpDA\Parser\Visitor\SuperglobalCollector'
@@ -86,24 +86,25 @@ class GenerateConfigCommand extends Command
             'visitorOptions' => [
                 'PhpDA\Parser\Visitor\Required\DeclaredNamespaceCollector' => [
                     'minDepth' => 2,
-                    'sliceLength' => $input->getOption('group-length') + 1
+                    'sliceLength' => $input->getOption('namespace-depth') + 1
                 ],
                 'PhpDA\Parser\Visitor\Required\MetaNamespaceCollector' => [
                     'minDepth' => 2,
-                    'sliceLength' => $input->getOption('group-length') + 1
+                    'sliceLength' => $input->getOption('namespace-depth') + 1
                 ],
                 'PhpDA\Parser\Visitor\Required\UsedNamespaceCollector' => [
                     'minDepth' => 2,
-                    'sliceLength' => $input->getOption('group-length') + 1
+                    'sliceLength' => $input->getOption('namespace-depth') + 1
                 ],
                 'PhpDA\Parser\Visitor\TagCollector' => [
                     'minDepth' => 2,
-                    'sliceLength' => $input->getOption('group-length') + 1
+                    'sliceLength' => $input->getOption('namespace-depth') + 1
                 ]
             ]
         ]);
 
-        $configurationFile = new \SplFileObject($input->getArgument('configuration'), 'w');
+        $configurationFileInfo = new \SplFileInfo($input->getArgument('configuration'));
+        $configurationFile = $configurationFileInfo->openFile('w');
         $configurationFile->fwrite($configuration);
         $output->writeln(sprintf(
             '<info>Configuration generated and written to "%s".</info>',

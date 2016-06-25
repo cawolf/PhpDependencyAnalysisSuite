@@ -93,7 +93,7 @@ class GenerateConfigCommandTest extends \PHPUnit_Framework_TestCase
             );
         } catch (\Exception $e) {
             $this->assertEquals(
-                sprintf('SplFileObject::__construct(%s): failed to open stream: Permission denied', $lockedFilePath),
+                sprintf('SplFileInfo::openFile(%s): failed to open stream: Permission denied', $lockedFilePath),
                 $e->getMessage()
             );
         }
@@ -111,7 +111,7 @@ class GenerateConfigCommandTest extends \PHPUnit_Framework_TestCase
             '--format' => 'svg',
             '--mode' => 'call',
             '--ignore' => ['ignore1', 'ignore2'],
-            '--group-length' => 4
+            '--namespace-depth' => 4
         ]);
         $this->assertEquals(
             sprintf("Configuration generated and written to \"%s\".\n", $filename),
