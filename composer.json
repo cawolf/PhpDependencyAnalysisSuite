@@ -15,7 +15,8 @@
   },
   "require": {
     "php": ">=5.5.9",
-    "symfony/console": ">=2.5"
+    "symfony/console": ">=2.5",
+    "symfony/yaml": ">=2.5"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.8",
@@ -23,5 +24,8 @@
   },
   "bin": [
     "bin/phpdasuite"
-  ]
+  ],
+  "suggest": {
+    "mamuz/php-dependency-analysis": "This project is the reason for the suite."
+  }
 }
