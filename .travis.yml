@@ -19,6 +19,7 @@ addons:
     repo_token: 756f16d91ebde9c4857c4360f62629d70305ff83d76f2ef9ca6e7bf96d33e885
 
 before_install:
+  - if [ "$TRAVIS_PHP_VERSION" == "hhvm" ]; then ls -al /tmp; mkdir /tmp; ls -al /tmp; fi
   - composer install --prefer-source
 
 after_script:
