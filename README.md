@@ -5,6 +5,8 @@ PhpDependencyAnalysisSuite
 [![Code Climate](https://codeclimate.com/github/cawolf/PhpDependencyAnalysisSuite/badges/gpa.svg)](https://codeclimate.com/github/cawolf/PhpDependencyAnalysisSuite)
 [![Test Coverage](https://codeclimate.com/github/cawolf/PhpDependencyAnalysisSuite/badges/coverage.svg)](https://codeclimate.com/github/cawolf/PhpDependencyAnalysisSuite/coverage)
 [![Dependency Status](https://www.versioneye.com/user/projects/5765a90b0735400045bbfce4/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5765a90b0735400045bbfce4)
+[![Packagist](https://img.shields.io/packagist/v/cawolf/php-dependency-analysis-suite.svg?maxAge=2592000)](https://packagist.org/packages/cawolf/php-dependency-analysis-suite)
+[![Packagist](https://img.shields.io/packagist/l/cawolf/php-dependency-analysis-suite.svg?maxAge=2592000)](https://packagist.org/packages/cawolf/php-dependency-analysis-suite)
 
 This suite will help you integrate the great project [PhpDependencyAnalysis](https://github.com/mamuz/PhpDependencyAnalysis) into your application.
 
