@@ -8,6 +8,8 @@ PhpDependencyAnalysisSuite
 [![Packagist](https://img.shields.io/packagist/v/cawolf/php-dependency-analysis-suite.svg?maxAge=2592000)](https://packagist.org/packages/cawolf/php-dependency-analysis-suite)
 [![Packagist](https://img.shields.io/packagist/l/cawolf/php-dependency-analysis-suite.svg?maxAge=2592000)](https://packagist.org/packages/cawolf/php-dependency-analysis-suite)
 
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/e84ad272-306e-4cb8-926d-e5e1e1729e89/big.png)](https://insight.sensiolabs.com/projects/e84ad272-306e-4cb8-926d-e5e1e1729e89)
+
 This suite will help you integrate the great project [PhpDependencyAnalysis](https://github.com/mamuz/PhpDependencyAnalysis) into your application.
 
 It includes a command to generate configuration files consumed by the [Analyze Command](https://github.com/mamuz/PhpDependencyAnalysis#usage) and a command to analyze the results and take appropriate actions.
