@@ -3,7 +3,6 @@
 namespace Cawolf\PhpDependencyAnalysisSuite\Tests\Command;
 
 use Cawolf\PhpDependencyAnalysisSuite\Command\GenerateConfigCommand;
-use Prophecy\Argument;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -30,7 +29,7 @@ class GenerateConfigCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testMissingArguments()
     {
-        $this->commandTester->execute([], []);
+        $this->commandTester->execute([]);
     }
 
     /**
@@ -39,7 +38,7 @@ class GenerateConfigCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testMissingSource()
     {
-        $this->commandTester->execute(['target' => 't', 'configuration' => 'c'], []);
+        $this->commandTester->execute(['target' => 't', 'configuration' => 'c']);
     }
 
     /**
@@ -48,7 +47,7 @@ class GenerateConfigCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testMissingTarget()
     {
-        $this->commandTester->execute(['source' => 's', 'configuration' => 'c'], []);
+        $this->commandTester->execute(['source' => 's', 'configuration' => 'c']);
     }
 
     /**
@@ -57,7 +56,7 @@ class GenerateConfigCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testMissingConfiguration()
     {
-        $this->commandTester->execute(['source' => 's', 'target' => 't'], []);
+        $this->commandTester->execute(['source' => 's', 'target' => 't']);
     }
 
     /**

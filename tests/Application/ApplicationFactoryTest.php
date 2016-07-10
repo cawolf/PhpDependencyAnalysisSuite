@@ -12,5 +12,6 @@ class ApplicationFactoryTest extends \PHPUnit_Framework_TestCase
         $application = $factory->create();
         $this->assertInstanceOf('Symfony\Component\Console\Application', $application);
         $this->assertNotNull($application->get('generate-config'));
+        $this->assertNotNull($application->get('process-result'));
     }
 }

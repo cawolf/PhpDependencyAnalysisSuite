@@ -2,7 +2,7 @@
   "name": "cawolf/php-dependency-analysis-suite",
   "license": "MIT",
   "type": "project",
-  "version": "0.1-dev",
+  "version": "1.0",
   "autoload": {
     "psr-4": {
       "Cawolf\\PhpDependencyAnalysisSuite\\": "src/"
@@ -16,7 +16,8 @@
   "require": {
     "php": ">=5.5.9",
     "symfony/console": ">=2.5",
-    "symfony/yaml": ">=2.5"
+    "symfony/yaml": ">=2.5",
+    "symfony/serializer": ">=2.5"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.8",
