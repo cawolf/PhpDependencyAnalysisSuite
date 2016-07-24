@@ -31,13 +31,6 @@ class ProcessResultCommand extends Command
                 1
             )
             ->addOption(
-                'message-on-cycle',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'message to print if a cycle is detected',
-                'One or more cycles were detected!'
-            )
-            ->addOption(
                 'exit-code-on-warning',
                 null,
                 InputOption::VALUE_REQUIRED,
@@ -45,11 +38,30 @@ class ProcessResultCommand extends Command
                 2
             )
             ->addOption(
+                'message-on-cycle',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'message to print if a cycle is detected',
+                'One or more cycles were detected!'
+            )
+            ->addOption(
                 'message-on-warning',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'message to print if a warning is detected',
                 'One or more warnings were detected!'
+            )
+            ->addOption(
+                'show-cycles',
+                'c',
+                InputOption::VALUE_NONE,
+                'show information about detected cycles'
+            )
+            ->addOption(
+                'show-warnings',
+                'w',
+                InputOption::VALUE_NONE,
+                'show information about detected warnings'
             )
             ->addOption(
                 'success-message',
@@ -63,6 +75,23 @@ class ProcessResultCommand extends Command
     /** @inheritdoc */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $result = $this->parseResult($input);
+
+        if (!isset($result['cycles']) || !isset($result['log'])) {
+            throw new InvalidArgumentException(
+                sprintf('File "%s" does not contain an analyze result', $input->getArgument('result'))
+            );
+        }
+
+        return $this->processResult($input, $output, $result);
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return array
+     */
+    private function parseResult(InputInterface $input)
+    {
         $resultFileInfo = new \SplFileInfo($input->getArgument('result'));
         if (!$resultFileInfo->isFile() || !$resultFileInfo->isReadable()) {
             throw new InvalidArgumentException(
@@ -74,13 +103,17 @@ class ProcessResultCommand extends Command
         $decoder = new JsonDecode(true);
         $result = $decoder->decode($resultFile->fread($resultFile->getSize()), JsonEncoder::FORMAT);
         $resultFile = null;
+        return $result;
+    }
 
-        if (!isset($result['cycles']) || !isset($result['log'])) {
-            throw new InvalidArgumentException(
-                sprintf('File "%s" does not contain an analyze result', $input->getArgument('result'))
-            );
-        }
-
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param array $result
+     * @return int
+     */
+    protected function processResult(InputInterface $input, OutputInterface $output, array $result)
+    {
         $hasCycles = count($result['cycles']) > 0;
         $hasWarnings = count($result['log']) > 0 && isset($result['log']['warning'])
             && count($result['log']['warning']) > 0;
@@ -88,15 +121,59 @@ class ProcessResultCommand extends Command
         $returnCode = 0;
         if ($hasCycles) {
             $output->writeln($input->getOption('message-on-cycle'));
+            if ($input->getOption('show-cycles')) {
+                $this->showCycles($output, $result['cycles']);
+            }
             $returnCode = $returnCode | $input->getOption('exit-code-on-cycle');
         }
         if ($hasWarnings) {
             $output->writeln($input->getOption('message-on-warning'));
+            if ($input->getOption('show-warnings')) {
+                $this->showWarnings($output, $result['log']['warning']);
+            }
             $returnCode = $returnCode | $input->getOption('exit-code-on-warning');
         }
         if (!$hasCycles && !$hasWarnings) {
             $output->writeln($input->getOption('success-message'));
+            return $returnCode;
         }
         return $returnCode;
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param array $cycles
+     */
+    private function showCycles(OutputInterface $output, array $cycles)
+    {
+        foreach ($cycles as $cycle) {
+            $output->writeln(
+                sprintf(
+                    'Detected cycle: %s',
+                    implode(' => ', $cycle)
+                )
+            );
+        }
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param array $warnings
+     */
+    private function showWarnings(OutputInterface $output, array $warnings)
+    {
+        foreach ($warnings as $warning) {
+            $file = '<unknown>';
+            if ($warning['context'][0]) {
+                $file = $warning['context'][0];
+            }
+            $output->writeln(
+                sprintf(
+                    'Detected warning: %s in file "%s"',
+                    $warning['message'],
+                    $file
+                )
+            );
+        }
     }
 }

@@ -105,6 +105,8 @@ This command parses the result of the PhpDependencyAnalysis `analyze` command an
 |---|---|---|---|
 | exit-code-on-cycle | `integer` | `1` | exit code of command if cycles were found |
 | exit-code-on-warning | `integer` | `1` | exit code of command if warnings were found |
+| show-cycles | `switch` | `-` | if active, cycle information will be printed line-by-line |
+| show-warnings | `switch` | `-` | if active, warning information will be printed line-by-line |
 | message-on-cycle | `string` | `One or more cycles were detected!` | message to be printed if cycles were found |
 | message-on-warning | `string` | `One or more warnings were detected!` | message to be printed if warnings were found |
 | success-message | `string` | `No cycles or warnings were detected!` | message to be printed if everything is fine |

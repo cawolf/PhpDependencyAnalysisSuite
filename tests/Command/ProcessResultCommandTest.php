@@ -110,31 +110,52 @@ class ProcessResultCommandTest extends \PHPUnit_Framework_TestCase
                 0
             ],
             [
-                ['cycles' => ['cycle info'], 'log' => []],
+                ['cycles' => [['cycle info 1', 'cycle info 2']], 'log' => []],
                 [],
                 "One or more cycles were detected!\n",
                 1
             ],
             [
-                ['cycles' => ['cycle info'], 'log' => []],
+                ['cycles' => [['cycle info 1', 'cycle info 2']], 'log' => []],
+                ['--show-cycles' => '--show-cycles'],
+                "One or more cycles were detected!\nDetected cycle: cycle info 1 => cycle info 2\n",
+                1
+            ],
+            [
+                ['cycles' => [['cycle info 1', 'cycle info 2']], 'log' => []],
                 ['--message-on-cycle' => 'Another cycle message', '--exit-code-on-cycle' => 5],
                 "Another cycle message\n",
                 5
             ],
             [
-                ['cycles' => [], 'log' => ['warning' => ['a waring']]],
+                ['cycles' => [], 'log' => ['warning' => [['message' => 'a warning', 'context' => [null]]]]],
                 [],
                 "One or more warnings were detected!\n",
                 2
             ],
             [
-                ['cycles' => [], 'log' => ['warning' => ['a waring']]],
+                ['cycles' => [], 'log' => ['warning' => [['message' => 'a warning', 'context' => [0 => 'file']]]]],
+                ['--show-warnings' => '--show-warnings'],
+                "One or more warnings were detected!\nDetected warning: a warning in file \"file\"\n",
+                2
+            ],
+            [
+                ['cycles' => [], 'log' => ['warning' => [['message' => 'a warning', 'context' => [null]]]]],
+                ['--show-warnings' => '--show-warnings'],
+                "One or more warnings were detected!\nDetected warning: a warning in file \"<unknown>\"\n",
+                2
+            ],
+            [
+                ['cycles' => [], 'log' => ['warning' => [['message' => 'a warning', 'context' => [null]]]]],
                 ['--message-on-warning' => 'Another warning message', '--exit-code-on-warning' => 15],
                 "Another warning message\n",
                 15
             ],
             [
-                ['cycles' => ['cycle info'], 'log' => ['warning' => ['a waring']]],
+                [
+                    'cycles' => [['cycle info 1', 'cycle info 2']],
+                    'log' => ['warning' => ['message' => 'a warning', 'context' => [null]]]
+                ],
                 [],
                 "One or more cycles were detected!\nOne or more warnings were detected!\n",
                 3
