@@ -17,7 +17,7 @@ class ApplicationFactory
      */
     public function create()
     {
-        $app = new Application('phpdasuite', '1.0');
+        $app = new Application('phpdasuite', '1.1');
         $app->add(new GenerateConfigCommand());
         $app->add(new ProcessResultCommand(new ConfigurationReader()));
         return $app;
