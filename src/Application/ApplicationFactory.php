@@ -19,7 +19,7 @@ class ApplicationFactory
     {
         $app = new Application('phpdasuite', '1.0');
         $app->add(new GenerateConfigCommand());
-        $app->add(new ProcessResultCommand());
+        $app->add(new ProcessResultCommand(new ConfigurationReader()));
         return $app;
     }
 }

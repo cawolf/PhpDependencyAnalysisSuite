@@ -2,9 +2,11 @@
 
 namespace Cawolf\PhpDependencyAnalysisSuite\Command;
 
+use Cawolf\PhpDependencyAnalysisSuite\Application\ConfigurationReader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,73 +19,97 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
  */
 class ProcessResultCommand extends Command
 {
+    /** @var ConfigurationReader */
+    private $configurationReader;
+
+    /** @var InputDefinition */
+    private $definition;
+
+    /**
+     * ProcessResultCommand constructor.
+     * @param ConfigurationReader $configurationReader
+     */
+    public function __construct(ConfigurationReader $configurationReader)
+    {
+        parent::__construct();
+        $this->configurationReader = $configurationReader;
+    }
+
     /** @inheritdoc */
     protected function configure()
     {
-        $this->setName('process-result')
-            ->setDescription('Analyzes a result file and takes appropriate actions.')
-            ->addArgument('result', InputArgument::REQUIRED, 'path to JSON result file of analyze command')
-            ->addOption(
+        $this->definition = new InputDefinition([
+            new InputArgument('result', InputArgument::REQUIRED, 'path to JSON result file of analyze command'),
+            new InputOption(
+                'configuration-file',
+                'f',
+                InputOption::VALUE_REQUIRED,
+                'path to default configuration file, values are overwritten by command options'
+            ),
+            new InputOption(
                 'exit-code-on-cycle',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'exit code of command if a cycle is detected',
                 1
-            )
-            ->addOption(
+            ),
+            new InputOption(
                 'exit-code-on-warning',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'exit code of command if a warning is detected',
                 2
-            )
-            ->addOption(
+            ),
+            new InputOption(
                 'message-on-cycle',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'message to print if a cycle is detected',
                 'One or more cycles were detected!'
-            )
-            ->addOption(
+            ),
+            new InputOption(
                 'message-on-warning',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'message to print if a warning is detected',
                 'One or more warnings were detected!'
-            )
-            ->addOption(
+            ),
+            new InputOption(
                 'show-cycles',
                 'c',
                 InputOption::VALUE_NONE,
                 'show information about detected cycles'
-            )
-            ->addOption(
+            ),
+            new InputOption(
                 'show-warnings',
                 'w',
                 InputOption::VALUE_NONE,
                 'show information about detected warnings'
-            )
-            ->addOption(
+            ),
+            new InputOption(
                 'success-message',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'message to print if everything is fine',
                 'No cycles or warnings were detected!'
-            );
+            )
+        ]);
+
+        $this->setName('process-result')
+            ->setDescription('Analyzes a result file and takes appropriate actions.')
+            ->setDefinition($this->definition);
     }
 
     /** @inheritdoc */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $options = $this->resolveOptions($input);
+
         $result = $this->parseResult($input);
 
-        if (!isset($result['cycles']) || !isset($result['log'])) {
-            throw new InvalidArgumentException(
-                sprintf('File "%s" does not contain an analyze result', $input->getArgument('result'))
-            );
-        }
+        $this->handleInvalidResult($input, $result);
 
-        return $this->processResult($input, $output, $result);
+        return $this->processResult($options, $output, $result);
     }
 
     /**
@@ -107,12 +133,12 @@ class ProcessResultCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
+     * @param array $options
      * @param OutputInterface $output
      * @param array $result
      * @return int
      */
-    protected function processResult(InputInterface $input, OutputInterface $output, array $result)
+    protected function processResult(array $options, OutputInterface $output, array $result)
     {
         $hasCycles = count($result['cycles']) > 0;
         $hasWarnings = count($result['log']) > 0 && isset($result['log']['warning'])
@@ -120,21 +146,21 @@ class ProcessResultCommand extends Command
 
         $returnCode = 0;
         if ($hasCycles) {
-            $output->writeln($input->getOption('message-on-cycle'));
-            if ($input->getOption('show-cycles')) {
+            $output->writeln($options['message-on-cycle']);
+            if ($options['show-cycles']) {
                 $this->showCycles($output, $result['cycles']);
             }
-            $returnCode = $returnCode | $input->getOption('exit-code-on-cycle');
+            $returnCode = $returnCode | $options['exit-code-on-cycle'];
         }
         if ($hasWarnings) {
-            $output->writeln($input->getOption('message-on-warning'));
-            if ($input->getOption('show-warnings')) {
+            $output->writeln($options['message-on-warning']);
+            if ($options['show-warnings']) {
                 $this->showWarnings($output, $result['log']['warning']);
             }
-            $returnCode = $returnCode | $input->getOption('exit-code-on-warning');
+            $returnCode = $returnCode | $options['exit-code-on-warning'];
         }
         if (!$hasCycles && !$hasWarnings) {
-            $output->writeln($input->getOption('success-message'));
+            $output->writeln($options['success-message']);
             return $returnCode;
         }
         return $returnCode;
@@ -173,6 +199,38 @@ class ProcessResultCommand extends Command
                     $warning['message'],
                     $file
                 )
+            );
+        }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return array
+     */
+    private function resolveOptions(InputInterface $input)
+    {
+        $options = $input->getOptions();
+        if ($options['configuration-file']) {
+            $configOptions = array_diff_assoc(
+                $this->configurationReader->readFromFile($options['configuration-file']),
+                $this->definition->getOptionDefaults()
+            );
+            $commandOptions = array_diff_assoc($options, $this->definition->getOptionDefaults());
+            $options = array_merge($this->definition->getOptionDefaults(), $configOptions, $commandOptions);
+        }
+        return $options;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param mixed $result
+     * @throws InvalidArgumentException
+     */
+    private function handleInvalidResult(InputInterface $input, $result)
+    {
+        if (!isset($result['cycles']) || !isset($result['log'])) {
+            throw new InvalidArgumentException(
+                sprintf('File "%s" does not contain an analyze result', $input->getArgument('result'))
             );
         }
     }

@@ -2,7 +2,9 @@
 
 namespace Cawolf\PhpDependencyAnalysisSuite\Tests\Command;
 
+use Cawolf\PhpDependencyAnalysisSuite\Application\ConfigurationReader;
 use Cawolf\PhpDependencyAnalysisSuite\Command\ProcessResultCommand;
+use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -23,7 +25,7 @@ class ProcessResultCommandTest extends \PHPUnit_Framework_TestCase
     /** @inheritdoc */
     public function setUp()
     {
-        $this->command = new ProcessResultCommand();
+        $this->command = new ProcessResultCommand(new ConfigurationReader());
         $this->commandTester = new CommandTester($this->command);
         $this->testFile = null;
     }
@@ -77,6 +79,32 @@ class ProcessResultCommandTest extends \PHPUnit_Framework_TestCase
     {
         $file = $this->createResultFile([]);
         $this->commandTester->execute(['result' => $file]);
+    }
+
+    public function testConfigurationFile()
+    {
+        $file = $this->createResultFile([
+            'cycles' => [['cycle info 1', 'cycle info 2']],
+            'log' => ['warning' => [['message' => 'a warning', 'context' => [null]]]]
+        ]);
+        /** @var ConfigurationReader|ObjectProphecy $reader */
+        $reader = $this->prophesize('Cawolf\PhpDependencyAnalysisSuite\Application\ConfigurationReader');
+        $reader->readFromFile('path/to/config')->shouldBeCalled()->willReturn([
+            'exit-code-on-cycle' => 16,
+            'message-on-cycle' => 'Message from config file'
+        ]);
+        $command = new ProcessResultCommand($reader->reveal());
+        $commandTester = new CommandTester($command);
+        $exit = $commandTester->execute([
+            'result' => $file,
+            '--configuration-file' => 'path/to/config',
+            '--message-on-cycle' => 'Message from command line'
+        ]);
+        $this->assertEquals(18, $exit); // 16 from config file, 2 from default value
+        $this->assertEquals(
+            "Message from command line\nOne or more warnings were detected!\n",
+            $commandTester->getDisplay()
+        );
     }
 
     /**

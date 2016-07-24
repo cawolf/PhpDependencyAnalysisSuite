@@ -103,14 +103,37 @@ This command parses the result of the PhpDependencyAnalysis `analyze` command an
 
 | *name* | *type* | *default* | *description* |
 |---|---|---|---|
+| configuration-file | `file` | _null_ | path to configuration file. Values are resolved in the order "defaults" -> "configuration file" -> "command line options" |
 | exit-code-on-cycle | `integer` | `1` | exit code of command if cycles were found |
-| exit-code-on-warning | `integer` | `1` | exit code of command if warnings were found |
-| show-cycles | `switch` | `-` | if active, cycle information will be printed line-by-line |
-| show-warnings | `switch` | `-` | if active, warning information will be printed line-by-line |
+| exit-code-on-warning | `integer` | `2` | exit code of command if warnings were found |
 | message-on-cycle | `string` | `One or more cycles were detected!` | message to be printed if cycles were found |
 | message-on-warning | `string` | `One or more warnings were detected!` | message to be printed if warnings were found |
+| show-cycles | `switch` | `false` | if active, cycle information will be printed line-by-line |
+| show-warnings | `switch` | `false` | if active, warning information will be printed line-by-line |
 | success-message | `string` | `No cycles or warnings were detected!` | message to be printed if everything is fine |
 
 ### Example
 
+* Command line options:
+
+    ```
     vendor/bin/phpdasuite process-result --message-on-warning="Warnings found" --exit-code-on-cycle=123 analysis.json
+    ```
+
+* Configuration file:
+
+    ```
+    vendor/bin/phpdasuite process-result --configuration-file="configuration.yml" analysis.json
+    ```
+
+A configuration file is in YAML format and holds the exact keys as the command accepts. A default configuration file would look like:
+
+```
+exit-code-on-cycle: 1
+exit-code-on-warning: 2
+message-on-cycle: One or more cycles were detected!
+message-on-warning: One or more warnings were detected!
+show-cycles: false
+show-warnings: false
+success-message: No cycles or warnings were detected!
+```
