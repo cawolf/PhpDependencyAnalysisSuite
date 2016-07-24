@@ -103,8 +103,8 @@ class GenerateConfigCommand extends Command
             ]
         ]);
 
-        $configurationFileInfo = new \SplFileInfo($input->getArgument('configuration'));
-        $configurationFile = $configurationFileInfo->openFile('w');
+        $fileInfo = new \SplFileInfo($input->getArgument('configuration'));
+        $configurationFile = $fileInfo->openFile('w');
         $configurationFile->fwrite($configuration);
         $output->writeln(sprintf(
             '<info>Configuration generated and written to "%s".</info>',

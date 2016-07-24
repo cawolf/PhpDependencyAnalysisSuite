@@ -107,8 +107,6 @@ class ProcessResultCommand extends Command
 
         $result = $this->parseResult($input);
 
-        $this->handleInvalidResult($input, $result);
-
         return $this->processResult($options, $output, $result);
     }
 
@@ -129,6 +127,12 @@ class ProcessResultCommand extends Command
         $decoder = new JsonDecode(true);
         $result = $decoder->decode($resultFile->fread($resultFile->getSize()), JsonEncoder::FORMAT);
         $resultFile = null;
+
+        if (!isset($result['cycles']) || !isset($result['log'])) {
+            throw new InvalidArgumentException(
+                sprintf('File "%s" does not contain an analyze result', $input->getArgument('result'))
+            );
+        }
         return $result;
     }
 
@@ -219,19 +223,5 @@ class ProcessResultCommand extends Command
             $options = array_merge($this->definition->getOptionDefaults(), $configOptions, $commandOptions);
         }
         return $options;
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param mixed $result
-     * @throws InvalidArgumentException
-     */
-    private function handleInvalidResult(InputInterface $input, $result)
-    {
-        if (!isset($result['cycles']) || !isset($result['log'])) {
-            throw new InvalidArgumentException(
-                sprintf('File "%s" does not contain an analyze result', $input->getArgument('result'))
-            );
-        }
     }
 }
