@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 /**
  * Class ProcessResultCommand
- * @package Command
+ * @package Cawolf\PhpDependencyAnalysisSuite\Command
  */
 class ProcessResultCommand extends Command
 {
