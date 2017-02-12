@@ -3,12 +3,13 @@
 namespace Cawolf\PhpDependencyAnalysisSuite\Tests\Application;
 
 use Cawolf\PhpDependencyAnalysisSuite\Application\ConfigurationReader;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationReaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @expectedException InvalidArgumentException
      * @expectedExceptionMessage File "a/path/that/does/not/exist" does not exist or is not readable
      */
     public function testInaccessibleFile()
@@ -25,6 +26,6 @@ class ConfigurationReaderTest extends \PHPUnit_Framework_TestCase
         $file = null;
 
         $reader = new ConfigurationReader();
-        $this->assertEquals(['success-message' => 'success!'], $reader->readFromFile($filePath));
+        self::assertEquals(['success-message' => 'success!'], $reader->readFromFile($filePath));
     }
 }

@@ -88,7 +88,7 @@ class ProcessResultCommandTest extends \PHPUnit_Framework_TestCase
             'log' => ['warning' => [['message' => 'a warning', 'context' => [null]]]]
         ]);
         /** @var ConfigurationReader|ObjectProphecy $reader */
-        $reader = $this->prophesize('Cawolf\PhpDependencyAnalysisSuite\Application\ConfigurationReader');
+        $reader = $this->prophesize(ConfigurationReader::class);
         $reader->readFromFile('path/to/config')->shouldBeCalled()->willReturn([
             'exit-code-on-cycle' => 16,
             'message-on-cycle' => 'Message from config file'
@@ -100,8 +100,8 @@ class ProcessResultCommandTest extends \PHPUnit_Framework_TestCase
             '--configuration-file' => 'path/to/config',
             '--message-on-cycle' => 'Message from command line'
         ]);
-        $this->assertEquals(18, $exit); // 16 from config file, 2 from default value
-        $this->assertEquals(
+        self::assertEquals(18, $exit); // 16 from config file, 2 from default value
+        self::assertEquals(
             "Message from command line\nOne or more warnings were detected!\n",
             $commandTester->getDisplay()
         );
@@ -118,8 +118,8 @@ class ProcessResultCommandTest extends \PHPUnit_Framework_TestCase
     {
         $file = $this->createResultFile($fileContent);
         $exit = $this->commandTester->execute(array_merge(['result' => $file], $commandOptions));
-        $this->assertEquals($expectedExit, $exit);
-        $this->assertEquals($expectedOutput, $this->commandTester->getDisplay());
+        self::assertEquals($expectedExit, $exit);
+        self::assertEquals($expectedOutput, $this->commandTester->getDisplay());
     }
 
     public function dataProvider()

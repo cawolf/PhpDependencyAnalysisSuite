@@ -3,6 +3,7 @@
 namespace Cawolf\PhpDependencyAnalysisSuite\Tests\Application;
 
 use Cawolf\PhpDependencyAnalysisSuite\Application\ApplicationFactory;
+use Symfony\Component\Console\Application;
 
 class ApplicationFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -10,8 +11,8 @@ class ApplicationFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $factory = new ApplicationFactory();
         $application = $factory->create();
-        $this->assertInstanceOf('Symfony\Component\Console\Application', $application);
-        $this->assertNotNull($application->get('generate-config'));
-        $this->assertNotNull($application->get('process-result'));
+        self::assertInstanceOf(Application::class, $application);
+        self::assertNotNull($application->get('generate-config'));
+        self::assertNotNull($application->get('process-result'));
     }
 }

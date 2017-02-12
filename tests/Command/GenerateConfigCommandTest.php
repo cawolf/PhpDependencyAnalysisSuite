@@ -91,7 +91,7 @@ class GenerateConfigCommandTest extends \PHPUnit_Framework_TestCase
                 ['source' => 's', 'target' => 't', 'configuration' => $lockedFilePath]
             );
         } catch (\Exception $e) {
-            $this->assertEquals(
+            self::assertEquals(
                 sprintf('SplFileInfo::openFile(%s): failed to open stream: Permission denied', $lockedFilePath),
                 $e->getMessage()
             );
@@ -112,14 +112,14 @@ class GenerateConfigCommandTest extends \PHPUnit_Framework_TestCase
             '--ignore' => ['ignore1', 'ignore2'],
             '--namespace-depth' => 4
         ]);
-        $this->assertEquals(
+        self::assertEquals(
             sprintf("Configuration generated and written to \"%s\".\n", $filename),
             $this->commandTester->getDisplay()
         );
-        $this->assertFileExists($filename);
+        self::assertFileExists($filename);
         $parsed = Yaml::parse(file_get_contents($filename));
         unlink($filename);
-        $this->assertEquals([
+        self::assertEquals([
             'mode' => 'call',
             'source' => 's',
             'filePattern' => '*.php',
