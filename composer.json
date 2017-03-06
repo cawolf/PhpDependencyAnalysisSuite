@@ -35,5 +35,8 @@
   },
   "bin": [
     "bin/phpdasuite"
-  ]
+  ],
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  }
 }

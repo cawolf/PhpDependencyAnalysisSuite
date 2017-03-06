@@ -23,7 +23,7 @@ class ProcessResultCommand extends Command
     private $configurationReader;
 
     /** @var InputDefinition */
-    private $definition;
+    private $inputDefinition;
 
     /**
      * ProcessResultCommand constructor.
@@ -38,7 +38,7 @@ class ProcessResultCommand extends Command
     /** @inheritdoc */
     protected function configure()
     {
-        $this->definition = new InputDefinition([
+        $this->inputDefinition = new InputDefinition([
             new InputArgument('result', InputArgument::REQUIRED, 'path to JSON result file of analyze command'),
             new InputOption(
                 'configuration-file',
@@ -97,7 +97,7 @@ class ProcessResultCommand extends Command
 
         $this->setName('process-result')
             ->setDescription('Analyzes a result file and takes appropriate actions.')
-            ->setDefinition($this->definition);
+            ->setDefinition($this->inputDefinition);
     }
 
     /** @inheritdoc */
@@ -126,7 +126,6 @@ class ProcessResultCommand extends Command
         $resultFile = $resultFileInfo->openFile();
         $decoder = new JsonDecode(true);
         $result = $decoder->decode($resultFile->fread($resultFile->getSize()), JsonEncoder::FORMAT);
-        $resultFile = null;
 
         if (!isset($result['cycles']) || !isset($result['log'])) {
             throw new InvalidArgumentException(
@@ -217,10 +216,10 @@ class ProcessResultCommand extends Command
         if ($options['configuration-file']) {
             $configOptions = array_diff_assoc(
                 $this->configurationReader->readFromFile($options['configuration-file']),
-                $this->definition->getOptionDefaults()
+                $this->inputDefinition->getOptionDefaults()
             );
-            $commandOptions = array_diff_assoc($options, $this->definition->getOptionDefaults());
-            $options = array_merge($this->definition->getOptionDefaults(), $configOptions, $commandOptions);
+            $commandOptions = array_diff_assoc($options, $this->inputDefinition->getOptionDefaults());
+            $options = array_merge($this->inputDefinition->getOptionDefaults(), $configOptions, $commandOptions);
         }
         return $options;
     }

@@ -60,16 +60,8 @@ class GenerateConfigCommand extends Command
     /** @inheritdoc */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!in_array($input->getOption('mode'), self::$modes)) {
-            throw new InvalidArgumentException(
-                sprintf('The "mode" must be one of: %s', implode(', ', self::$modes))
-            );
-        }
-        if (!in_array($input->getOption('format'), self::$formats)) {
-            throw new InvalidArgumentException(
-                sprintf('The "format" must be one of: %s', implode(', ', self::$formats))
-            );
-        }
+        $this->validateOption($input, 'mode', self::$modes);
+        $this->validateOption($input, 'format', self::$formats);
 
         $configuration = Yaml::dump([
             'mode' => $input->getOption('mode'),
@@ -110,5 +102,19 @@ class GenerateConfigCommand extends Command
             '<info>Configuration generated and written to "%s".</info>',
             $input->getArgument('configuration')
         ));
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param string $optionName
+     * @param array $validValues
+     */
+    private function validateOption(InputInterface $input, $optionName, array $validValues)
+    {
+        if (!in_array($input->getOption($optionName), $validValues)) {
+            throw new InvalidArgumentException(
+                sprintf('The "%s" must be one of: %s', $optionName, implode(', ', $validValues))
+            );
+        }
     }
 }
